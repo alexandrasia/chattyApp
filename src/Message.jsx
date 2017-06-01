@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 
 class Message extends Component {
 
+  // Handles incoming messags and notifications
   get messageClass() {
     switch(this.props.type) {
       case "incomingMessage": return "message";
       case "incomingNotification": return "notification";
     }
   }
-
 
   render() {
     return (
