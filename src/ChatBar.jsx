@@ -13,8 +13,6 @@ class ChatBar extends Component {
   this.onNameChange = this.onNameChange.bind(this);
   this.onContentChange = this.onContentChange.bind(this);
   this.onKeyDown = this.onKeyDown.bind(this);
-  // this.onUsernameKeyDown = this.onUsernameKeyDown.bind(this);
-  // this.onBlur = this.onBlur.bind(this);
   }
 
 
@@ -34,7 +32,6 @@ class ChatBar extends Component {
       console.log('Enter key pressed');
       this.props.newMessage(this.state.message);
       this.setState({ message: ''});
-      // console.log(this.state.content);
     }
   }
 
@@ -47,17 +44,7 @@ class ChatBar extends Component {
     }
   }
 
-  // onUsernameKeyDown(event) {
-  //   if (event.key === 'Enter') {
-  //     this.props.newUsername(this.props.username, this.state.username);
-  //   }
-  // }
 
-  // onBlur(event) {
-  //   console.log(event.type);
-  //   this.props.newUsername(this.props.username, this.state.username);
-  //   // this.props.newNotification();
-  // }
 
   render() {
     return (
