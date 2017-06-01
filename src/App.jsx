@@ -1,30 +1,28 @@
 import React, {Component} from 'react';
 
 import ChatBar from './ChatBar.jsx';
-// import Message from './Message.jsx';
 import MessageList from './MessageList.jsx';
-
+import NavBar from './NavBar.jsx';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       username: '',
       messages: []
     };
-
     this.addNewMessage = this.addNewMessage.bind(this);
-    // this.addNewNotification = this.addNewNotification.bind(this);
     this.setNewUsername = this.setNewUsername.bind(this);
   }
 
+  // Handles both old and new usernames and notification for change
   setNewUsername(oldUsername, newUsername) {
     this.setState({ username: newUsername });
-    this.addNewNotification(`${oldUsername || 'Unknown'} changed their name to ${newUsername}`);
+    this.addNewNotification(`${oldUsername || 'Anonymous'} changed their name to ${newUsername}`);
   }
 
+  // Sends new message to the server as a string
   addNewMessage(content) {
     const message = {
       username: this.state.username,
@@ -32,45 +30,39 @@ class App extends Component {
       type: 'postMessage'
     };
     this.socket.send(JSON.stringify(message));
-    // console.log(message);
   }
 
+  // Sends new notification to the server as a string
   addNewNotification(note) {
     const notification = {
       type: 'postNotification',
       content: note
     }
-
     this.socket.send(JSON.stringify(notification));
   }
 
-
-
+  // Parses incoming messages/notifications/online users and handles them accordingly
   componentDidMount() {
-    this.socket = new WebSocket("ws://127.0.0.1:3001");
-
+    this.socket = new WebSocket("ws://localhost:3001");
     this.socket.onmessage = (event) => {
-
       let message = JSON.parse(event.data);
-
-      const newMessages = this.state.messages.concat(message);
-      this.setState({messages: newMessages});
-
+      switch(message.type) {
+        case "incomingMessage":
+        case "incomingNotification": this.setState({ messages: this.state.messages.concat(message)});
+        break;
+        case "onlineUsers": this.setState({ onlineUsers: message.onlineUsers });
+        break;
+      }
     };
-
     this.socket.onopen = () => {
       console.log("Connected to server");
-
     }
   }
-
 
   render() {
     return (
       <div className="messagecontainer">
-        <nav className="navbar">
-        <a href="/" className="navbar-brand">Chatty</a>
-        </nav>
+        <NavBar onlineUsers={ this.state.onlineUsers }/>
         <MessageList messages={ this.state.messages }/>
         <ChatBar username={ this.state.username }
           newUsername={ this.setNewUsername }
@@ -81,3 +73,5 @@ class App extends Component {
   }
 }
 export default App;
+
+
