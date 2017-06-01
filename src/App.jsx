@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import ChatBar from './ChatBar.jsx';
-import Message from './Message.jsx';
+// import Message from './Message.jsx';
 import MessageList from './MessageList.jsx';
 
 
@@ -11,20 +11,37 @@ class App extends Component {
     super(props);
 
     this.state = {
-      currentUser: {name: "Alex"},
+      username: '',
       messages: []
     };
 
     this.addNewMessage = this.addNewMessage.bind(this);
+    // this.addNewNotification = this.addNewNotification.bind(this);
+    this.setNewUsername = this.setNewUsername.bind(this);
   }
 
-  addNewMessage(username, content) {
+  setNewUsername(oldUsername, newUsername) {
+    this.setState({ username: newUsername });
+    this.addNewNotification(`${oldUsername || 'Unknown'} changed their name to ${newUsername}`);
+  }
+
+  addNewMessage(content) {
     const message = {
-      username: username,
-      content: content
+      username: this.state.username,
+      content: content,
+      type: 'postMessage'
     };
     this.socket.send(JSON.stringify(message));
+    // console.log(message);
+  }
 
+  addNewNotification(note) {
+    const notification = {
+      type: 'postNotification',
+      content: note
+    }
+
+    this.socket.send(JSON.stringify(notification));
   }
 
 
@@ -33,24 +50,17 @@ class App extends Component {
     this.socket = new WebSocket("ws://127.0.0.1:3001");
 
     this.socket.onmessage = (event) => {
-      // console.log("Received message:", message);
+
       let message = JSON.parse(event.data);
-      // console.log('receivedMessage:', receivedMessage);
 
       const newMessages = this.state.messages.concat(message);
-    // console.log(newMessages);
       this.setState({messages: newMessages});
 
-
-
-      // here is where it receives message from server
-      // need to make it show on page
     };
 
     this.socket.onopen = () => {
       console.log("Connected to server");
-      // this is where the client sends message to server
-      // this.socket.send('This message was sent to the server')
+
     }
   }
 
@@ -62,7 +72,10 @@ class App extends Component {
         <a href="/" className="navbar-brand">Chatty</a>
         </nav>
         <MessageList messages={ this.state.messages }/>
-        <ChatBar user={ this.state.currentUser.name } newMessage={ this.addNewMessage } />
+        <ChatBar username={ this.state.username }
+          newUsername={ this.setNewUsername }
+          newMessage={ this.addNewMessage }
+        />
       </div>
     );
   }

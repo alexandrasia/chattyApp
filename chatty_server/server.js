@@ -21,26 +21,33 @@ const wss = new SocketServer({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 
-wss.broadcast = function broadcast(message) {
+wss.broadcast = function broadcast(data) {
   wss.clients.forEach(function each(client) {
-    client.send(JSON.stringify(message));
+    // console.log(data);
+    client.send(JSON.stringify(data));
 
-  })
+  });
 };
 
 
 wss.on('connection', function connection(ws) {
 
-  ws.on('message', function incoming(message) {
+  ws.on('message', function incoming(data) {
     // console.log("we are in the message event in the websockets");
-    // console.log('Received: ', message);
-    message = JSON.parse(message);
-    message.id = uuidV4();
-    wss.broadcast(message);
 
-      // console.log(message);
+    data = JSON.parse(data);
+    data.id = uuidV4();
+    if (data.type === 'postNotification') {
+      data.type = 'incomingNotification'
+    } else if (data.type === 'postMessage') {
+      data.type = 'incomingMessage'
+    } else {
+      data.type = 'nonsense, please ignore';
+    }
 
-    // where the server receives the message
+    wss.broadcast(data);
+
+
 
   });
 
