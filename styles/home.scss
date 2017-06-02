@@ -90,6 +90,10 @@
       margin-top: 20px;
     }
 
-    span.message-content {
+    .notification {
       font-style: italic;
+    }
+
+    input[disabled] {
+      background-color: #aaa;
     }

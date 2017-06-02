@@ -19,8 +19,12 @@ const wss = new SocketServer({ server });
 
 // Broadcasts data to client
 wss.broadcast = function broadcast(data) {
+  const packet = JSON.stringify(data);
   wss.clients.forEach(function each(client) {
-    client.send(JSON.stringify(data));
+    try {
+      client.send(packet);
+    }
+    catch(ex) { console.error("Client disconnected already"); }
   });
 };
 
@@ -34,26 +38,24 @@ function handleMessage(data) {
   } else if (data.type === "postMessage") {
     data.type = "incomingMessage";
   } else {
-    data.type = "nonsense, please ignore";
+    return;
   }
   wss.broadcast(data);
 }
 
-wss.on("connection", function connection(client) {
-  function updateOnlineCount() {
-    wss.broadcast({
-      id: uuidV4(),
-      type: "onlineUsers",
-      onlineUsers: wss.clients.size
-    });
-  }
+function updateOnlineCount() {
+  wss.broadcast({
+    id: uuidV4(),
+    type: "onlineUsers",
+    onlineUsers: wss.clients.size
+  });
+}
 
+wss.on("connection", function connection(client) {
   updateOnlineCount();
 
   client.on("message", handleMessage);
 
-  // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  client.on("close", () => {
-    updateOnlineCount();
-  });
+  // Set up a callback for when a client closes the socket/their browser
+  client.on("close", updateOnlineCount);
 });

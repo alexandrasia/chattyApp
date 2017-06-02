@@ -7,23 +7,20 @@ class ChatBar extends Component {
       username: "",
       message: ""
     };
-    this.onNameChange = this.onNameChange.bind(this);
-    this.onContentChange = this.onContentChange.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   // Sets username
-  onNameChange(event) {
+  onNameChange = event => {
     this.setState({ username: event.target.value });
   }
 
   // Sets message
-  onContentChange(event) {
+  onContentChange = event => {
     this.setState({ message: event.target.value });
   }
 
   // New message on enter and clears textboc
-  onKeyDown(event) {
+  onKeyDown = event => {
     if (event.key === "Enter") {
       this.props.newMessage(this.state.message);
       this.setState({ message: "" });
@@ -49,6 +46,7 @@ class ChatBar extends Component {
           onChange={this.onNameChange}
           onBlur={this.onUsernameChanged}
           onKeyDown={this.onUsernameChanged}
+          disabled={!this.props.online}
         />
 
         <input
@@ -57,6 +55,7 @@ class ChatBar extends Component {
           value={this.state.message}
           onChange={this.onContentChange}
           onKeyDown={this.onKeyDown}
+          disabled={!this.props.online}
         />
       </footer>
     );

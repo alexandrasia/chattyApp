@@ -6,7 +6,7 @@ class NavBar extends Component {
       <nav className="navbar">
         <a href="/" className="navbar-brand">Chatty</a>
         <span className="userCount">
-          {this.props.onlineUsers} user(s) online
+          { this.props.online ? `${this.props.onlineUsers} user(s) online` : 'Offline' }
         </span>
       </nav>
     );
