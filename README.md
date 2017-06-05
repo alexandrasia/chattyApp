@@ -14,7 +14,7 @@ Chatty App is a real-time chat app that allows users to communicate with each ot
 
 ### Getting Started
 
-* Install dependencies using `npm install`
+* Install dependencies using `npm install` twice - once in the main directory and again in the chatty_server directory (there are two package.json files)
 * Start the Websocket server using `npm start` in the chatty_server directory
 * Run server.js using `npm start`
 * Default port for app is 3000
